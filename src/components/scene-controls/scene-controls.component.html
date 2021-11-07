@@ -1,8 +1,34 @@
-<v-card class="controls-root">
+<v-card flat>
   <v-card-title> Controls </v-card-title>
   <v-card-text>
-    Lorem ipsum, dolor sit amet consectetur adipisicing elit. Illo accusamus
-    unde vel adipisci at. Rerum maxime aut dolorum laudantium eveniet
-    perspiciatis natus, quia nobis voluptates. Aperiam eaque eos fuga? Sint.
+    <h3 class="mb-4">Position</h3>
+    <v-text-field
+      outlined
+      dense
+      type="number"
+      label="X"
+      hide-details
+      class="mb-3"
+      v-model="positionX"
+    ></v-text-field>
+    <v-text-field
+      outlined
+      dense
+      type="number"
+      label="Y"
+      hide-details
+      class="mb-3"
+      v-model="positionY"
+    ></v-text-field>
+    <v-text-field
+      outlined
+      dense
+      type="number"
+      label="Z"
+      hide-details
+      class="mb-3"
+      v-model="positionZ"
+    ></v-text-field>
+    <v-divider></v-divider>
   </v-card-text>
 </v-card>

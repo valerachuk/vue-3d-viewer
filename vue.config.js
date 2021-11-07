@@ -10,6 +10,8 @@ module.exports = {
   ],
   chainWebpack: config => {
     config.resolve.alias
-      .set('@components', path.resolve('src/components/'));
+      .set('@components', path.resolve('src/components/'))
+      .set('@math-services', path.resolve('src/math-services/'))
+      .set('@event-bus', path.resolve('src/event-bus'));
   }
 };

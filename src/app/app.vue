@@ -2,4 +2,4 @@
 
 <script src="./app.js" />
 
-<style scoped src="./app.css" />
+<style src="./app.css" scoped />
