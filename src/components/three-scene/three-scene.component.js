@@ -39,6 +39,7 @@ export default {
     loadTextModel () {
       const material = new THREE.MeshStandardMaterial({
         color: 'hsl(0, 100%, 50%)'
+        // wireframe: true
       });
 
       const loader = new STLLoader();
@@ -54,8 +55,11 @@ export default {
     },
 
     applyTransform (newTransform) {
-      const newMatrix = createTransformMatrix(newTransform);
-      newMatrix.decompose(this.textMesh.position, this.textMesh.quaternion, this.textMesh.scale);
+      const rowMajorArray = createTransformMatrix(newTransform);
+      const threeMatrix = new THREE.Matrix4();
+      threeMatrix.set(...rowMajorArray);
+
+      threeMatrix.decompose(this.textMesh.position, this.textMesh.quaternion, this.textMesh.scale);
       this.render();
     },
 
