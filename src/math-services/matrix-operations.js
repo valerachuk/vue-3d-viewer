@@ -3,18 +3,31 @@ import { MatrixContext, cosDeg, sinDeg } from '@math-services';
 export function createTransformMatrix (transform) {
   const matrix = MatrixContext.Identity;
 
-  const mirror = transform.mirror;
-  const mirrorToScale = {
-    x: mirror.x ? -1 : 1,
-    y: mirror.y ? -1 : 1,
-    z: mirror.z ? -1 : 1
-  };
+  if ('mirror' in transform) {
+    const mirror = transform.mirror;
+    const mirrorToScale = {
+      x: mirror.x ? -1 : 1,
+      y: mirror.y ? -1 : 1,
+      z: mirror.z ? -1 : 1
+    };
+    matrix.premultiply(getScaleMatrix(mirrorToScale));
+  }
 
-  matrix.premultiply(getScaleMatrix(mirrorToScale));
-  matrix.premultiply(getRotationMatrix(transform.rotationAroundWorldCenter));
-  matrix.premultiply(getPositionMatrix(transform.position));
-  matrix.premultiply(getRotationMatrix(transform.rotation));
-  matrix.premultiply(getScaleMatrix(transform.scale));
+  if ('rotationAroundWorldCenter' in transform) {
+    matrix.premultiply(getRotationMatrix(transform.rotationAroundWorldCenter));
+  }
+
+  if ('position' in transform) {
+    matrix.premultiply(getPositionMatrix(transform.position));
+  }
+
+  if ('rotation' in transform) {
+    matrix.premultiply(getRotationMatrix(transform.rotation));
+  }
+
+  if ('scale' in transform) {
+    matrix.premultiply(getScaleMatrix(transform.scale));
+  }
 
   return matrix.toRowMajor();
 }

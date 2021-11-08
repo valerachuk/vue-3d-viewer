@@ -1,19 +1,33 @@
 <v-card flat>
   <v-card-title> Controls </v-card-title>
   <v-card-text>
-    <h3 class="mb-4">Scale</h3>
-    <vector-input v-model="scale" step="0.05"></vector-input>
+    <h3 class="mb-4">Animation</h3>
+    <v-checkbox
+      v-model="animationEnabled"
+      label="Turn on animation"
+      @click="animationStateChanged"
+    ></v-checkbox>
+    <p v-if="animationEnabled" class="text-body-1">
+      Animation curve:
+      <br />
+      y = x^sin(2x) - x^cos(5x)
+    </p>
 
-    <h3 class="my-4">Rotation</h3>
-    <vector-input v-model="rotation" step="5"></vector-input>
+    <template v-if="!animationEnabled">
+      <h3 class="my-4">Scale</h3>
+      <vector-input v-model="scale" step="0.05"></vector-input>
 
-    <h3 class="my-4">Position</h3>
-    <vector-input v-model="position"></vector-input>
+      <h3 class="my-4">Rotation</h3>
+      <vector-input v-model="rotation" step="5"></vector-input>
 
-    <h3 class="my-4">Rotation around world center</h3>
-    <vector-input v-model="rotationAroundWorldCenter" step="5"></vector-input>
+      <h3 class="my-4">Position</h3>
+      <vector-input v-model="position" max="30"></vector-input>
 
-    <h3 class="my-4">Mirror</h3>
-    <mirror-vector-input v-model="mirror"></mirror-vector-input>
+      <h3 class="my-4">Rotation around world center</h3>
+      <vector-input v-model="rotationAroundWorldCenter" step="5"></vector-input>
+
+      <h3 class="my-4">Mirror</h3>
+      <mirror-vector-input v-model="mirror"></mirror-vector-input>
+    </template>
   </v-card-text>
 </v-card>

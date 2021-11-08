@@ -11,6 +11,7 @@ export default {
   },
 
   data: () => ({
+    animationEnabled: false,
     transform: {
       position: {
         x: 0,
@@ -43,6 +44,9 @@ export default {
   methods: {
     emitInput () {
       EventBus.$emit('transformControlsUpdated', this.transform);
+    },
+    animationStateChanged () {
+      EventBus.$emit('animationStateChanged', this.animationEnabled);
     }
   },
 

@@ -9,6 +9,10 @@ export default {
     step: {
       type: [Number, String],
       default: 1
+    },
+    max: {
+      type: [Number, String],
+      default: 10000
     }
   },
 

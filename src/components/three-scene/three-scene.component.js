@@ -1,20 +1,31 @@
 import * as THREE from 'three';
 import { STLLoader } from 'three/examples/jsm/loaders/STLLoader';
 import EventBus from '@event-bus';
-import { createTransformMatrix } from '@math-services';
+import { createTransformMatrix, animationFunction } from '@math-services';
 
 export default {
   name: 'ThreeScene',
 
   data: () => ({
+    threeClock: null,
     scene: null,
     camera: null,
     renderer: null,
-    textMesh: null
+    textMesh: null,
+    animationEnabled: false,
+    animationInfo: {
+      initialAnimationX: 0,
+      animationX: null,
+      animationSpeed: 2,
+      animationXMin: 1,
+      animationXMax: 25
+    },
+    lastTransform: {}
   }),
 
   mounted () {
-    EventBus.$on('transformControlsUpdated', this.applyTransform);
+    EventBus.$on('transformControlsUpdated', this.onTransformControlsUpdated);
+    EventBus.$on('animationStateChanged', this.animationStateChanged);
     this.initScene();
     this.onWindowResize();
     window.addEventListener('resize', this.onWindowResize);
@@ -23,7 +34,8 @@ export default {
 
   beforeDestroy () {
     window.removeEventListener('resize', this.onWindowResize);
-    EventBus.$off('transformControlsUpdated', this.applyTransform);
+    EventBus.$off('transformControlsUpdated', this.onTransformControlsUpdated);
+    EventBus.$off('animationStateChanged', this.animationStateChanged);
   },
 
   methods: {
@@ -54,6 +66,11 @@ export default {
       );
     },
 
+    onTransformControlsUpdated (newTransform) {
+      this.lastTransform = newTransform;
+      this.applyTransform(newTransform);
+    },
+
     applyTransform (newTransform) {
       const rowMajorArray = createTransformMatrix(newTransform);
       const threeMatrix = new THREE.Matrix4();
@@ -63,11 +80,53 @@ export default {
       this.render();
     },
 
+    animationStateChanged (animationEnabled) {
+      this.animationEnabled = animationEnabled;
+
+      if (animationEnabled) {
+        this.animationInfo.animationX = this.animationInfo.initialAnimationX;
+        this.threeClock.start();
+        this.animate();
+        return;
+      }
+
+      this.applyTransform(this.lastTransform);
+    },
+
+    animate () {
+      if (!this.animationEnabled) {
+        return;
+      }
+
+      requestAnimationFrame(this.animate);
+
+      this.animationInfo.animationX += this.animationInfo.animationSpeed * this.threeClock.getDelta();
+
+      if (this.animationInfo.animationX >= this.animationInfo.animationXMax) {
+        this.animationInfo.animationSpeed = -Math.abs(this.animationInfo.animationSpeed);
+      }
+
+      if (this.animationInfo.animationX <= this.animationInfo.animationXMin) {
+        this.animationInfo.animationSpeed = Math.abs(this.animationInfo.animationSpeed);
+      }
+
+      const animationY = animationFunction(this.animationInfo.animationX);
+      this.applyTransform({
+        position: {
+          x: this.animationInfo.animationX,
+          y: animationY,
+          z: 0
+        }
+      });
+    },
+
     render () {
       this.renderer.render(this.scene, this.camera);
     },
 
     initScene () {
+      this.threeClock = new THREE.Clock();
+
       this.scene = new THREE.Scene();
       this.scene.background = new THREE.Color('hsl(0, 100%, 100%)');
 
@@ -96,4 +155,5 @@ export default {
       this.$refs.canvasHandler.appendChild(this.renderer.domElement);
     }
   }
+
 };
