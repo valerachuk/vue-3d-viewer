@@ -17,13 +17,13 @@ export class MatrixContext {
   }
 
   toRowMajor () {
-    const columnMajorArray = [];
+    const transposedMatrix = new MatrixContext([]);
     for (let i = 0; i < this.COLUMNS; i++) {
       for (let j = 0; j < this.ROWS; j++) {
-        columnMajorArray[j + i * this.ROWS] = this.getAt(j, i);
+        transposedMatrix.setAt(i, j, this.getAt(j, i));
       }
     }
-    return columnMajorArray;
+    return transposedMatrix.columnMajorArray; // Now it is row-major
   }
 
   getAt (column, row) {

@@ -17,7 +17,7 @@ export default {
       initialAnimationX: 0,
       animationX: null,
       animationSpeed: 2,
-      animationXMin: 1,
+      animationXMin: 0,
       animationXMax: 25
     },
     lastTransform: {}
@@ -50,8 +50,8 @@ export default {
 
     loadTextModel () {
       const material = new THREE.MeshStandardMaterial({
-        color: 'hsl(0, 100%, 50%)'
-        // wireframe: true
+        color: 'hsl(0, 100%, 50%)',
+        wireframe: true
       });
 
       const loader = new STLLoader();
