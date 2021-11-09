@@ -1,0 +1,13 @@
+.flex-container {
+  height: 100vh;
+}
+
+.scene-controls {
+  width: 350px;
+  flex-shrink: 0;
+}
+
+.divider {
+  width: 2px;
+  flex-shrink: 0;
+}
