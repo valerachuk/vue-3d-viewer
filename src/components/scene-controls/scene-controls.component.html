@@ -1,19 +1,30 @@
 <v-card flat>
   <v-card-title> Controls </v-card-title>
   <v-card-text>
-    <h3 class="mb-4">Animation</h3>
-    <v-checkbox
-      v-model="animationEnabled"
-      label="Turn on animation"
-      @click="animationStateChanged"
-    ></v-checkbox>
-    <p v-if="animationEnabled" class="text-body-1">
-      Animation curve:
-      <br />
-      y = x^sin(2x) - x^cos(5x)
-    </p>
+    <template v-if="!rotationEnabled">
+      <h3 class="mb-4">Animate</h3>
+      <v-checkbox
+        v-model="animationEnabled"
+        label="Turn on animation"
+        @click="animationStateChanged"
+      ></v-checkbox>
+      <p v-if="animationEnabled" class="text-body-1">
+        Animation curve:
+        <br />
+        y = x^sin(2x) - x^cos(5x)
+      </p>
+    </template>
 
     <template v-if="!animationEnabled">
+      <h3 class="mb-4">Rotate</h3>
+      <v-checkbox
+        v-model="rotationEnabled"
+        label="Turn on rotation"
+        @click="rotateStateChanged"
+      ></v-checkbox>
+    </template>
+
+    <template v-if="!animationEnabled && !rotationEnabled">
       <h3 class="my-4">Scale</h3>
       <vector-input v-model="scale" step="0.05"></vector-input>
 
@@ -29,5 +40,8 @@
       <h3 class="my-4">Mirror</h3>
       <mirror-vector-input v-model="mirror"></mirror-vector-input>
     </template>
+
+    <h3 class="mt-4">Depth buffer</h3>
+    <depth-buffer-controls v-model="depthBuffer"></depth-buffer-controls>
   </v-card-text>
 </v-card>

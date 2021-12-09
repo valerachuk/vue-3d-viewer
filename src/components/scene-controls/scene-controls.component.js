@@ -1,17 +1,20 @@
 import EventBus from '@event-bus';
 import VectorInput from '../vector-input/vector-input.component.vue';
 import MirrorVectorInput from '../mirror-vector-input/mirror-vector-input.component.vue';
+import DepthBufferControls from '../depth-buffer-controls/depth-buffer-controls.component.vue';
 
 export default {
   name: 'SceneControls',
 
   components: {
     VectorInput,
-    MirrorVectorInput
+    MirrorVectorInput,
+    DepthBufferControls
   },
 
   data: () => ({
     animationEnabled: false,
+    rotationEnabled: false,
     transform: {
       position: {
         x: 0,
@@ -38,6 +41,11 @@ export default {
         y: false,
         z: false
       }
+    },
+    depthBufferSettings: {
+      enabled: true,
+      comparator: 'LESS',
+      initialBufferValue: 1
     }
   }),
 
@@ -47,6 +55,12 @@ export default {
     },
     animationStateChanged () {
       EventBus.$emit('animationStateChanged', this.animationEnabled);
+    },
+    rotateStateChanged () {
+      EventBus.$emit('rotateStateChanged', this.rotationEnabled);
+    },
+    depthBufferSettingsChanged () {
+      EventBus.$emit('depthBufferSettingsChanged', this.depthBufferSettings);
     }
   },
 
@@ -99,6 +113,17 @@ export default {
       set (value) {
         this.transform.mirror = value;
         this.emitInput();
+      }
+    },
+    depthBuffer: {
+
+      get () {
+        return this.depthBufferSettings;
+      },
+
+      set (value) {
+        this.depthBufferSettings = value;
+        this.depthBufferSettingsChanged();
       }
     }
   }

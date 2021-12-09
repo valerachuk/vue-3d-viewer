@@ -20,12 +20,20 @@ export default {
       animationXMin: 0,
       animationXMax: 25
     },
+    rotationEnabled: false,
+    rotationInfo: {
+      currentRotation: null,
+      initialRotation: 0,
+      rotationSpeed: 30 // deg / sec
+    },
     lastTransform: {}
   }),
 
   mounted () {
     EventBus.$on('transformControlsUpdated', this.onTransformControlsUpdated);
-    EventBus.$on('animationStateChanged', this.animationStateChanged);
+    EventBus.$on('animationStateChanged', this.onAnimationStateChanged);
+    EventBus.$on('rotateStateChanged', this.onRotateStateChanged);
+    EventBus.$on('depthBufferSettingsChanged', this.applyDepthBufferSettings);
     this.initScene();
     this.onWindowResize();
     window.addEventListener('resize', this.onWindowResize);
@@ -35,10 +43,39 @@ export default {
   beforeDestroy () {
     window.removeEventListener('resize', this.onWindowResize);
     EventBus.$off('transformControlsUpdated', this.onTransformControlsUpdated);
-    EventBus.$off('animationStateChanged', this.animationStateChanged);
+    EventBus.$off('animationStateChanged', this.onAnimationStateChanged);
+    EventBus.$on('rotateStateChanged', this.onRotateStateChanged);
+    EventBus.$off('depthBufferSettingsChanged', this.applyDepthBufferSettings);
   },
 
   methods: {
+    applyDepthBufferSettings (depthBufferSettings) {
+      const gl = this.renderer.getContext();
+
+      if (!depthBufferSettings.enabled) {
+        gl.disable(gl.DEPTH_TEST);
+        this.render();
+        return;
+      }
+
+      gl.enable(gl.DEPTH_TEST);
+      gl.clearDepth(depthBufferSettings.initialBufferValue);
+
+      const comparators = {
+        NEVER: gl.NEVER,
+        LESS: gl.LESS,
+        EQUAL: gl.EQUAL,
+        LEQUAL: gl.LEQUAL,
+        GREATER: gl.GREATER,
+        NOTEQUAL: gl.NOTEQUAL,
+        GEQUAL: gl.GEQUAL,
+        ALWAYS: gl.ALWAYS
+      };
+
+      gl.depthFunc(comparators[depthBufferSettings.comparator]);
+      this.render();
+    },
+
     onWindowResize () {
       const { width, height } = this.$refs.canvasHandler.getBoundingClientRect();
       this.camera.aspect = width / height;
@@ -50,8 +87,8 @@ export default {
 
     loadTextModel () {
       const material = new THREE.MeshStandardMaterial({
-        color: 'hsl(0, 100%, 50%)',
-        wireframe: true
+        color: 'hsl(0, 100%, 50%)'
+        // wireframe: true
       });
 
       const loader = new STLLoader();
@@ -80,7 +117,41 @@ export default {
       this.render();
     },
 
-    animationStateChanged (animationEnabled) {
+    onRotateStateChanged (rotationEnabled) {
+      this.rotationEnabled = rotationEnabled;
+
+      if (rotationEnabled) {
+        this.rotationInfo.currentRotation = this.rotationInfo.initialRotation;
+        this.threeClock.start();
+        this.rotate();
+        return;
+      }
+
+      this.applyTransform(this.lastTransform);
+    },
+
+    rotate () {
+      if (!this.rotationEnabled) {
+        return;
+      }
+
+      requestAnimationFrame(this.rotate);
+
+      this.rotationInfo.currentRotation += this.rotationInfo.rotationSpeed * this.threeClock.getDelta();
+      this.rotationInfo.currentRotation %= 360;
+
+      const currentRotation = this.rotationInfo.currentRotation;
+
+      this.applyTransform({
+        rotation: {
+          x: currentRotation,
+          y: currentRotation,
+          z: currentRotation
+        }
+      });
+    },
+
+    onAnimationStateChanged (animationEnabled) {
       this.animationEnabled = animationEnabled;
 
       if (animationEnabled) {

@@ -1,0 +1,30 @@
+<div>
+  <v-checkbox
+    label="Enable"
+    hide-details
+    class="mb-3"
+    v-model="enabledValue"
+  ></v-checkbox>
+
+  <template v-if="enabledValue">
+    <v-select
+      :items="depthComparatorValues"
+      v-model="comparatorValue"
+      outlined
+      dense
+      label="Comparator"
+      hide-details
+      class="mb-3"
+    ></v-select>
+
+    <v-text-field
+      outlined
+      dense
+      type="number"
+      label="Initial buffer value"
+      hide-details
+      class="mb-3"
+      v-model="initialBufferValue"
+    ></v-text-field>
+  </template>
+</div>
