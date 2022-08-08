@@ -1,5 +1,5 @@
 import * as THREE from 'three';
-import { STLLoader } from 'three/examples/jsm/loaders/STLLoader';
+// import { STLLoader } from 'three/examples/jsm/loaders/STLLoader';
 import EventBus from '@event-bus';
 import { createTransformMatrix, animationFunction } from '@math-services';
 
@@ -86,21 +86,42 @@ export default {
     },
 
     loadTextModel () {
-      const material = new THREE.MeshStandardMaterial({
-        color: 'hsl(0, 100%, 50%)'
+      const red = new THREE.MeshStandardMaterial({
+        color: 'hsl(0, 100%, 50%)',
+        side: THREE.DoubleSide
         // wireframe: true
       });
 
-      const loader = new STLLoader();
-      loader.load(
-        './hello-world.stl',
-        geometry => {
-          this.textMesh = new THREE.Mesh(geometry, material);
-          this.textMesh.add(new THREE.AxesHelper(15));
-          this.scene.add(this.textMesh);
-          this.render();
-        }
-      );
+      const green = new THREE.MeshStandardMaterial({
+        color: 'hsl(50, 100%, 50%)',
+        side: THREE.DoubleSide
+        // wireframe: true
+      });
+
+      // const loader = new STLLoader();
+      // loader.load(
+      //   './hello-world.stl',
+      //   geometry => {
+      //     this.textMesh = new THREE.Mesh(geometry, material);
+      //     this.textMesh.add(new THREE.AxesHelper(15));
+      //     this.scene.add(this.textMesh);
+      //     this.render();
+      //   }
+      // );
+
+      const geometry1 = new THREE.PlaneGeometry(20, 20);
+      const planeMesh1 = new THREE.Mesh(geometry1, red);
+      this.textMesh = planeMesh1;
+
+      const geometry2 = new THREE.PlaneGeometry(20, 20);
+      const planeMesh2 = new THREE.Mesh(geometry2, green);
+      planeMesh2.rotateX(0.4);
+      planeMesh2.rotateY(0.4);
+      planeMesh2.rotateZ(0.4);
+      planeMesh1.add(planeMesh2);
+
+      this.scene.add(planeMesh1);
+      this.render();
     },
 
     onTransformControlsUpdated (newTransform) {
